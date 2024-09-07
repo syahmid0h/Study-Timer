@@ -44,8 +44,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     //this func reads the study time from the user input, it also starts the startTimer
     function startStudy() {
-        studyTime = parseInt(studyTimeInput.ariaValueMax, 10);
-        startTimer(studyTime, 'STUDY')
+        studyTime = parseInt(studyTimeInput.value, 10);
+        
+        if (studyTime < 1 || isNaN(studyTime)) {
+            alert("Study time must be atleast 1 minute.");
+            return;
+        }
+        startTimer(studyTime, 'STUDY');
     }
 
     //this func starts a 5-minute break after using startTimer, cannot change the break
@@ -75,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     //This is Event Listeners for buttons, so that if u click it then the functions will trigger
-    startButton.addEventListener('click', startTimer);
+    startButton.addEventListener('click', startStudy);
     pauseButton.addEventListener('click', pauseTimer);
     resetButton.addEventListener('click', resetTimer);
     shortBreakButton.addEventListener('click', startShortBreak);
