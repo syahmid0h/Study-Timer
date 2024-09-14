@@ -51,7 +51,7 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    return redirect(url_for('login'))
+    return redirect('login 2.html')
 
 @app.route('/home')
 def home():
@@ -62,13 +62,13 @@ def home():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect('home.html')
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for('home'))
+            return redirect('home.html')
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login 2.html', form=form)
@@ -76,7 +76,7 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect('home.html')
     form = RegisterForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -84,7 +84,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         flash('Account successfully created! You can now log in.')
-        return redirect(url_for('login'))
+        return redirect('login 2.html')
     return render_template('register.html', form=form)
 
 
@@ -95,7 +95,7 @@ def register():
 def logout():
     logout_user()
       flash('You have been logged out', 'info')
-    return redirect(url_for('login'))
+    return redirect('login 2.html')
 
 
 
@@ -109,7 +109,7 @@ def change_password():
             current_user.password = hashed_password
             db.session.commit()
             flash('Password updated successfully!', 'success')
-            return redirect(url_for('home'))
+            return redirect('home.html')
         else:
             flash('Current password is incorrect', 'retry')
     return render_template('account.html', form=form)
