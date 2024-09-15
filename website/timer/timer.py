@@ -3,15 +3,14 @@ import time
 
 app = Flask(__name__)
 
-# Global variables to manage the stopwatch state
+#to manage the state of timer
 start_time = None
 elapsed_time = 0
 is_running = False
 
 @app.route('/')
 def index():
-    return render_template_string('''
-<!DOCTYPE html>
+    return render_template_string('''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -25,7 +24,7 @@ def index():
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f5f5dc; /* Beige background */
+            background-color: #f5f5dc;
         }
 
         .container {
@@ -35,7 +34,7 @@ def index():
         #stopwatch {
             font-size: 4rem;
             margin-bottom: 20px;
-            color: #87CEEB; /* Baby blue color for the stopwatch text */
+            color: #87CEEB;
         }
 
         .buttons button {
@@ -44,13 +43,13 @@ def index():
             margin: 5px;
             border: none;
             border-radius: 5px;
-            background-color: #87CEEB; /* Baby blue color for buttons */
+            background-color: #87CEEB;
             color: white;
             cursor: pointer;
         }
 
         .buttons button:hover {
-            background-color: #4682B4; /* Slightly darker baby blue on hover */
+            background-color: #4682B4;
         }
     </style>
 </head>
@@ -97,31 +96,31 @@ def index():
 </body>
 </html>
 ''')
-
+#for start
 @app.route('/start', methods=['POST'])
 def start():
     global start_time, is_running
     if not is_running:
-        start_time = time.time() - elapsed_time
+        start_time = time.time()- elapsed_time
         is_running = True
-    return jsonify({"status": "started"})
-
+    return jsonify({"status":"started"})
+#for stop
 @app.route('/stop', methods=['POST'])
 def stop():
     global elapsed_time, is_running
     if is_running:
         elapsed_time = time.time() - start_time
         is_running = False
-    return jsonify({"status": "stopped"})
-
+    return jsonify({"status":"stopped"})
+#for reset
 @app.route('/reset', methods=['POST'])
 def reset():
-    global start_time, elapsed_time, is_running
+    global start_time,elapsed_time,is_running
     start_time = None
     elapsed_time = 0
     is_running = False
-    return jsonify({"status": "reset"})
-
+    return jsonify({"status":"reset"})
+#to get time
 @app.route('/time', methods=['GET'])
 def get_time():
     if is_running:
