@@ -15,7 +15,7 @@ def index():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown Timer with Breaks</title>
+    <title>StudySpace</title>
     <style>
         body {
             font-family: Arial, sans-serif;
