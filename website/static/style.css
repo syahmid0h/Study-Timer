@@ -1,0 +1,51 @@
+style for timer
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f5f5dc;
+}
+
+.container {
+    text-align: center;
+}
+
+#timer {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: #87CEEB;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px; /* Spacing between buttons */
+    margin-top: 20px; /* Add some margin to the top */
+}
+
+.buttons button {
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #87CEEB;
+    color: white;
+    cursor: pointer;
+    min-width: 120px; /* Ensure consistent button width */
+}
+
+.buttons button:hover {
+    background-color: #4682B4;
+}
+
+input[type="text"] {
+    font-size: 1rem;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+ 
