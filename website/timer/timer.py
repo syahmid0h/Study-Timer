@@ -3,7 +3,7 @@ import time
 
 app = Flask(__name__)
 
-# To manage the state of the countdown timer
+# To manage the countdown timer
 start_time = None
 total_time = 0
 is_running = False
@@ -70,7 +70,7 @@ def index():
 </head>
 <body>
     <div class="container">
-        <input type="text" id="inputTime" placeholder="Your desired time !(eg,20)">
+        <input type="text" id="inputTime" placeholder="Your desired time !(eg,in minutes)">
         <div id="timer">00:00:00</div>
         <div class="buttons">
             <button id="start">Start</button>
