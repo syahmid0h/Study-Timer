@@ -1,86 +1,136 @@
-from flask import Flask, render_template_string, redirect, url_for, jsonify
+from flask import Flask, render_template_string, jsonify
 import time
 
 app = Flask(__name__)
 
-start_time = 0
+# Global variables to manage the stopwatch state
+start_time = None
 elapsed_time = 0
-running = False
-
-# Helper function to convert elapsed time to a string
-def time_to_string(elapsed):
-    hrs, rem = divmod(elapsed, 3600)
-    mins, secs = divmod(rem, 60)
-    return f"{int(hrs):02}:{int(mins):02}:{int(secs):02}"
+is_running = False
 
 @app.route('/')
 def index():
-    global elapsed_time
-    if running:
-        elapsed_time = time.time() - start_time
-    return render_template_string(html_template, time=time_to_string(elapsed_time))
-
-@app.route('/start', methods=['POST'])
-def start_timer():
-    global start_time, running
-    if not running:
-        start_time = time.time() - elapsed_time
-        running = True
-    return redirect(url_for('index'))
-
-@app.route('/stop', methods=['POST'])
-def stop_timer():
-    global elapsed_time, running
-    if running:
-        elapsed_time = time.time() - start_time
-        running = False
-    return redirect(url_for('index'))
-
-@app.route('/reset', methods=['POST'])
-def reset_timer():
-    global start_time, elapsed_time, running
-    start_time = 0
-    elapsed_time = 0
-    running = False
-    return redirect(url_for('index'))
-
-@app.route('/status')
-def timer_status():
-    global elapsed_time
-    if running:
-        elapsed_time = time.time() - start_time
-    return jsonify({"time": time_to_string(elapsed_time)})
-
-html_template = '''
+    return render_template_string('''
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Timer</title>
+    <title>Stopwatch</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f0f0f0; }
-        .timer-display { font-size: 3rem; margin-bottom: 20px; }
-        .timer-controls button { font-size: 1rem; padding: 10px 20px; margin: 5px; cursor: pointer; }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5dc; /* Beige background */
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        #stopwatch {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #87CEEB; /* Baby blue color for the stopwatch text */
+        }
+
+        .buttons button {
+            font-size: 1rem;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #87CEEB; /* Baby blue color for buttons */
+            color: white;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background-color: #4682B4; /* Slightly darker baby blue on hover */
+        }
     </style>
 </head>
 <body>
-    <div class="timer-display" id="timerDisplay">{{ time }}</div>
-    <div class="timer-controls">
-        <form action="/start" method="post"><button type="submit">Start</button></form>
-        <form action="/stop" method="post"><button type="submit">Stop</button></form>
-        <form action="/reset" method="post"><button type="submit">Reset</button></form>
+    <div class="container">
+        <div id="stopwatch">00:00:00</div>
+        <div class="buttons">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <button id="reset">Reset</button>
+        </div>
     </div>
     <script>
-        setInterval(async function() {
-            const response = await fetch('/status');
-            const data = await response.json();
-            document.getElementById("timerDisplay").innerHTML = data.time;
-        }, 1000);
+        let interval;
+
+        function updateTime() {
+            fetch('/time')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('stopwatch').innerText = data.time;
+            });
+        }
+
+        document.getElementById('start').addEventListener('click', function() {
+            fetch('/start', {method: 'POST'});
+            if (!interval) {
+                interval = setInterval(updateTime, 1000);
+            }
+        });
+
+        document.getElementById('stop').addEventListener('click', function() {
+            fetch('/stop', {method: 'POST'});
+            clearInterval(interval);
+            interval = null;
+        });
+
+        document.getElementById('reset').addEventListener('click', function() {
+            fetch('/reset', {method: 'POST'});
+            document.getElementById('stopwatch').innerText = "00:00:00";
+            clearInterval(interval);
+            interval = null;
+        });
     </script>
 </body>
 </html>
-'''
+''')
 
-if __name__ == '_main_':
+@app.route('/start', methods=['POST'])
+def start():
+    global start_time, is_running
+    if not is_running:
+        start_time = time.time() - elapsed_time
+        is_running = True
+    return jsonify({"status": "started"})
+
+@app.route('/stop', methods=['POST'])
+def stop():
+    global elapsed_time, is_running
+    if is_running:
+        elapsed_time = time.time() - start_time
+        is_running = False
+    return jsonify({"status": "stopped"})
+
+@app.route('/reset', methods=['POST'])
+def reset():
+    global start_time, elapsed_time, is_running
+    start_time = None
+    elapsed_time = 0
+    is_running = False
+    return jsonify({"status": "reset"})
+
+@app.route('/time', methods=['GET'])
+def get_time():
+    if is_running:
+        current_time = time.time() - start_time
+    else:
+        current_time = elapsed_time
+    minutes, seconds = divmod(int(current_time), 60)
+    hours, minutes = divmod(minutes, 60)
+    return jsonify({"time": f"{hours:02}:{minutes:02}:{seconds:02}"})
+
+if __name__ == '__main__':
     app.run(debug=True)
