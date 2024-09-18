@@ -3,27 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Timer</title>
-    <link rel="stylesheet" href="style.css">
+    <title>StudySpace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5dc;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        #timer {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #87CEEB;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            font-size: 1rem;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #87CEEB;
+            color: white;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .buttons button:hover {
+            background-color: #4682B4;
+        }
+
+        input[type="text"] {
+            font-size: 1rem;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div class="timer-container">
-        <h1 id="timer-label">Timer</h1>
-        <div id="time">25:00</div>
-
-        <label for="study-time">Enter study time (minutes):</label>
-        <input type="number" id="study-time" min="1" value="25" placeholder="Enter study time (mins)">
-
-        <div class="button-container">
-            <button id="start-btn">Start Study</button>
-            <button id="pause-btn">Pause</button>
-            <button id="reset-btn">Reset</button>
-            <button id="short-break-btn">Short Break</button>
-            <button id="long-break-btn">Long Break</button>
+    <div class="container">
+        <input type="text" id="inputTime" placeholder="Your desired time! (e.g., in minutes)">
+        <div id="timer">00:00:00</div>
+        <div class="buttons">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <button id="reset">Reset</button>
+            <button id="shortBreak">Short Break</button>
+            <button id="longBreak">Long Break</button>
         </div>
     </div>
+    <script>
+        let interval;
 
-    <!-- link to our JavaScript file -->
-    <script src="{{ url_for('static', filename='timer.js') }}"></script>
+        function updateTime() {
+            fetch('/time')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('timer').innerText = data.time;
+            });
+        }
+
+        document.getElementById('start').addEventListener('click', function() {
+            const inputTime = document.getElementById('inputTime').value;
+            fetch('/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "time": inputTime })
+            });
+            if (!interval) {
+                interval = setInterval(updateTime, 1000);
+            }
+        });
+
+        document.getElementById('stop').addEventListener('click', function() {
+            fetch('/stop', {method: 'POST'});
+            clearInterval(interval);
+            interval = null;
+        });
+
+        document.getElementById('reset').addEventListener('click', function() {
+            fetch('/reset', {method: 'POST'});
+            document.getElementById('timer').innerText = "00:00:00";
+            clearInterval(interval);
+            interval = null;
+        });
+
+        document.getElementById('shortBreak').addEventListener('click', function() {
+            fetch('/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "time": 5 })  // 5 minutes for short break
+            });
+            if (!interval) {
+                interval = setInterval(updateTime, 1000);
+            }
+        });
+
+        document.getElementById('longBreak').addEventListener('click', function() {
+            fetch('/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ "time": 10 })  // 10 minutes for long break
+            });
+            if (!interval) {
+                interval = setInterval(updateTime, 1000);
+            }
+        });
+    </script>
 </body>
 </html>
