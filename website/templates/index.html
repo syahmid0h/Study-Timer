@@ -1,50 +1,53 @@
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f5f5dc;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Timer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='timerstyle.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div id="timer">00:00</div>
+        <div class="buttons">
+            <input type="text" id="time-input" placeholder="Enter time in minutes">
+            <button id="start-button">Start</button>
+            <button id="stop-button">Stop</button>
+            <button id="reset-button">Reset</button>
+        </div>
+    </div>
 
-.container {
-    text-align: center;
-}
+    <script>
+        function updateTimer() {
+            $.get('/time', function(data) {
+                $('#timer').text(data.time);
+            });
+        }
 
-#timer {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    color: #87CEEB;
-}
+        $('#start-button').click(function() {
+            const time = $('#time-input').val();
+            $.post('/start', JSON.stringify({ time: time }), function(response) {
+                console.log(response.status);
+                updateTimer();
+            }, 'json');
+        });
 
-.buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px; /* this for space between buttons */
-    margin-top: 20px;
-}
+        $('#stop-button').click(function() {
+            $.post('/stop', function(response) {
+                console.log(response.status);
+            }, 'json');
+        });
 
-.buttons button {
-    font-size: 1rem;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #87CEEB;
-    color: white;
-    cursor: pointer;
-    min-width: 120px; 
-}
+        $('#reset-button').click(function() {
+            $.post('/reset', function(response) {
+                console.log(response.status);
+                $('#timer').text('00:00');
+            }, 'json');
+        });
 
-.buttons button:hover {
-    background-color: #4682B4;
-}
-
-input[type="text"] {
-    font-size: 1rem;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
- 
+        // Update the timer every second
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
