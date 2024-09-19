@@ -4,50 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Timer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='timerstyle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div id="timer">00:00</div>
-        <div class="buttons">
-            <input type="text" id="time-input" placeholder="Enter time in minutes">
-            <button id="start-button">Start</button>
-            <button id="stop-button">Stop</button>
-            <button id="reset-button">Reset</button>
-        </div>
+        <input type="text" id="time-input" placeholder="Enter time">
+        <button id="start-button">Start</button>
+        <button id="stop-button">Stop</button>
+        <button id="reset-button">Reset</button>
     </div>
 
     <script>
-        function updateTimer() {
-            $.get('/time', function(data) {
-                $('#timer').text(data.time);
+        $(document).ready(function() {
+            $('#start-button').click(function() {
+                console.log('Start button clicked');
+                const time = $('#time-input').val();
+                $.ajax({
+                    url: '/start',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ time: time }),
+                    success: function(response) {
+                        console.log(response.status);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error starting timer:', textStatus, errorThrown);
+                    }
+                });
             });
-        }
 
-        $('#start-button').click(function() {
-            const time = $('#time-input').val();
-            $.post('/start', JSON.stringify({ time: time }), function(response) {
-                console.log(response.status);
-                updateTimer();
-            }, 'json');
+            $('#stop-button').click(function() {
+                console.log('Stop button clicked');
+                $.ajax({
+                    url: '/stop',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    success: function(response) {
+                        console.log(response.status);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error stopping timer:', textStatus, errorThrown);
+                    }
+                });
+            });
+
+            $('#reset-button').click(function() {
+                console.log('Reset button clicked');
+                $.ajax({
+                    url: '/reset',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    success: function(response) {
+                        console.log(response.status);
+                        $('#timer').text('00:00');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error resetting timer:', textStatus, errorThrown);
+                    }
+                });
+            });
+
+            function updateTimer() {
+                $.get('/time', function(data) {
+                    $('#timer').text(data.time);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error fetching time:', textStatus, errorThrown);
+                });
+            }
+
+            setInterval(updateTimer, 1000);
         });
-
-        $('#stop-button').click(function() {
-            $.post('/stop', function(response) {
-                console.log(response.status);
-            }, 'json');
-        });
-
-        $('#reset-button').click(function() {
-            $.post('/reset', function(response) {
-                console.log(response.status);
-                $('#timer').text('00:00');
-            }, 'json');
-        });
-
-        // Update the timer every second
-        setInterval(updateTimer, 1000);
     </script>
 </body>
 </html>
