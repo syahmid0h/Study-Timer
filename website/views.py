@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request
 import time
 
 # Define a blueprint for the views
-app = Blueprint('app', __name__)
+views = Blueprint('views', __name__)
 
 # Timer variables
 timer_running = False
@@ -21,12 +21,12 @@ def format_time(seconds):
 # Routes
 
 # This is your homepage route where the timer will be displayed
-@app.route('/')
+@views.route('/')
 def index():
     return render_template('index.html')
 
 # Start the timer
-@app.route('/start', methods=['POST'])
+@views.route('/start', methods=['POST'])
 def start_timer():
     global timer_running, timer_duration, timer_start_time
     data = request.get_json()
@@ -36,14 +36,14 @@ def start_timer():
     return jsonify({"status": "Timer started"})
 
 # Stop the timer
-@app.route('/stop', methods=['POST'])
+@views.route('/stop', methods=['POST'])
 def stop_timer():
     global timer_running
     timer_running = False
     return jsonify({"status": "Timer stopped"})
 
 # Reset the timer
-@app.route('/reset', methods=['POST'])
+@views.route('/reset', methods=['POST'])
 def reset_timer():
     global timer_running, timer_duration, timer_start_time
     timer_running = False
@@ -52,7 +52,7 @@ def reset_timer():
     return jsonify({"status": "Timer reset"})
 
 # Get the current time
-@app.route('/time', methods=['GET'])
+@views.route('/time', methods=['GET'])
 def get_time():
     global timer_duration, timer_start_time, timer_running
     if not timer_running:
