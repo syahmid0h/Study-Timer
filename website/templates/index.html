@@ -11,70 +11,86 @@
     <div class="container">
         <div id="timer">00:00</div>
         <input type="text" id="time-input" placeholder="Enter time">
-        <button id="start-button">Start</button>
-        <button id="stop-button">Stop</button>
-        <button id="reset-button">Reset</button>
+        <div class="buttons">
+            <button id="start-button">Start</button>
+            <button id="pause-button">Pause</button>
+            <button id="reset-button">Reset</button>
+        </div>
     </div>
 
     <script>
+        let timerInterval;
+
+        function startTimer() {
+            const time = $('#time-input').val();
+            $.ajax({
+                url: '/start',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ time: time }),
+                success: function(response) {
+                    console.log(response.status);
+                    if (!timerInterval) {
+                        timerInterval = setInterval(updateTimer, 1000);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error starting timer:', textStatus, errorThrown);
+                }
+            });
+        }
+
+        function pauseTimer() {
+            $.ajax({
+                url: '/pause',
+                type: 'POST',
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log(response.status);
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    isPaused = true;
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error pausing timer:', textStatus, errorThrown);
+                }
+            });
+        }
+
+        function resetTimer() {
+            $.ajax({
+                url: '/reset',
+                type: 'POST',
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log(response.status);
+                    $('#timer').text('00:00');
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error resetting timer:', textStatus, errorThrown);
+                }
+            });
+        }
+
+        function updateTimer() {
+            $.get('/time', function(data) {
+                $('#timer').text(data.time);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Error fetching time:', textStatus, errorThrown);
+            });
+        }
+
         $(document).ready(function() {
-            $('#start-button').click(function() {
-                console.log('Start button clicked');
-                const time = $('#time-input').val();
-                $.ajax({
-                    url: '/start',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ time: time }),
-                    success: function(response) {
-                        console.log(response.status);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.error('Error starting timer:', textStatus, errorThrown);
-                    }
-                });
+            $('#start-button').click(startTimer);
+            $('#pause-button').click(pauseTimer);
+            $('#reset-button').click(resetTimer);
+
+            // Clear interval if needed (e.g., on page unload)
+            $(window).on('beforeunload', function() {
+                clearInterval(timerInterval);
             });
-
-            $('#stop-button').click(function() {
-                console.log('Stop button clicked');
-                $.ajax({
-                    url: '/stop',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    success: function(response) {
-                        console.log(response.status);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.error('Error stopping timer:', textStatus, errorThrown);
-                    }
-                });
-            });
-
-            $('#reset-button').click(function() {
-                console.log('Reset button clicked');
-                $.ajax({
-                    url: '/reset',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    success: function(response) {
-                        console.log(response.status);
-                        $('#timer').text('00:00');
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.error('Error resetting timer:', textStatus, errorThrown);
-                    }
-                });
-            });
-
-            function updateTimer() {
-                $.get('/time', function(data) {
-                    $('#timer').text(data.time);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error fetching time:', textStatus, errorThrown);
-                });
-            }
-
-            setInterval(updateTimer, 1000);
         });
     </script>
 </body>
