@@ -1,4 +1,3 @@
-style for timer
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -23,8 +22,8 @@ body {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px; /* Spacing between buttons */
-    margin-top: 20px; /* Add some margin to the top */
+    gap: 10px; /* this for space between buttons */
+    margin-top: 20px;
 }
 
 .buttons button {
@@ -35,7 +34,7 @@ body {
     background-color: #87CEEB;
     color: white;
     cursor: pointer;
-    min-width: 120px; /* Ensure consistent button width */
+    min-width: 120px; 
 }
 
 .buttons button:hover {

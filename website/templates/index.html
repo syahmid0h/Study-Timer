@@ -4,26 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Timer</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <div class="timer-container">
-        <h1 id="timer-label">Timer</h1>
-        <div id="time">25:00</div>
-
-        <label for="study-time">Enter study time (minutes):</label>
-        <input type="number" id="study-time" min="1" value="25" placeholder="Enter study time (mins)">
-
-        <div class="button-container">
-            <button id="start-btn">Start Study</button>
-            <button id="pause-btn">Pause</button>
-            <button id="reset-btn">Reset</button>
-            <button id="short-break-btn">Short Break</button>
-            <button id="long-break-btn">Long Break</button>
+    <div class="container">
+        <div id="timer">00:00</div>
+        <input type="text" id="time-input" placeholder="Enter time">
+        <div class="buttons">
+            <button id="start-button">Start</button>
+            <button id="pause-button">Pause</button>
+            <button id="reset-button">Reset</button>
         </div>
     </div>
 
-    <!-- link to our JavaScript file -->
-    <script src="{{ url_for('static', filename='timer.js') }}"></script>
+    <script>
+        let timerInterval;
+
+        function startTimer() {
+            const time = $('#time-input').val();
+            $.ajax({
+                url: '/start',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ time: time }),
+                success: function(response) {
+                    console.log(response.status);
+                    if (!timerInterval) {
+                        timerInterval = setInterval(updateTimer, 1000);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error starting timer:', textStatus, errorThrown);
+                }
+            });
+        }
+
+        function pauseTimer() {
+            $.ajax({
+                url: '/pause',
+                type: 'POST',
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log(response.status);
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    isPaused = true;
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error pausing timer:', textStatus, errorThrown);
+                }
+            });
+        }
+
+        function resetTimer() {
+            $.ajax({
+                url: '/reset',
+                type: 'POST',
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log(response.status);
+                    $('#timer').text('00:00');
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error resetting timer:', textStatus, errorThrown);
+                }
+            });
+        }
+
+        function updateTimer() {
+            $.get('/time', function(data) {
+                $('#timer').text(data.time);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Error fetching time:', textStatus, errorThrown);
+            });
+        }
+
+        $(document).ready(function() {
+            $('#start-button').click(startTimer);
+            $('#pause-button').click(pauseTimer);
+            $('#reset-button').click(resetTimer);
+
+            // Clear interval if needed (e.g., on page unload)
+            $(window).on('beforeunload', function() {
+                clearInterval(timerInterval);
+            });
+        });
+    </script>
 </body>
 </html>
