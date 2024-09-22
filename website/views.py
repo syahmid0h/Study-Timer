@@ -76,3 +76,7 @@ def get_time():
         elapsed_time = time.time() - timer_start_time
         remaining_time = timer_duration - int(elapsed_time)
         return jsonify({"time": format_time(remaining_time)})
+    
+@views.route('/login')
+def login():
+    return render_template('login 2.html')
