@@ -1,16 +1,15 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 auth = Blueprint('auth', __name__)
 
+@auth.route('/register')
+def register():
+    return render_template('register.html')
+
 @auth.route('/login')
+def login():
+    return render_template('login 2.html')
 
-def login():                #Login text, 3 of these is the defined routes
-    return "<p>Login</p>"   #<p></p> Is the paragraph HTML 
-
-@auth.route('/logout')      #Logout text, auth.route is for the url to go to the "Login", "Logout", "Signup" page when the end of the url has /logout, /login, /sign-up ykwim :)
-def logout():
-    return "<p>Logout</p>"
-
-@auth.route('/sign-up')     #Sign up text
-def sign_up():
-    return "<p>Sign Up</p>"
+@auth.route('/account')
+def account():
+    return render_template('account.html')
