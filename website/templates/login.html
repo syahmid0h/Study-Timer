@@ -1,0 +1,82 @@
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif ;
+    background-image: linear-gradient(to right, blue,#89cff0 );
+        }
+
+        .login-container {
+            margin-top: 150px;
+            margin-left:480px ;
+            text-align: center;
+            justify-content: center;
+    background-color: #f5f5dc;
+    background-position:center;
+    padding: 48px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+
+        }
+
+        .login-container h1 {
+            font-size: 36px;
+    
+            
+        }
+
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            padding: 10px;
+            margin: 10px 0;
+            width: 300px;
+            font-size: 16px;
+            border: 1px solid #000000;
+            border-radius: 10px;
+        
+        }
+
+        .login-container input[type="submit"] 
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        
+
+        .signup-link {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .signup-link a {
+            text-decoration: none;
+            color: #171717;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login StudySpace</h1>
+        <form action="/login" method="POST">
+            <input type="text" name="username" placeholder="Username"><br>
+            <input type="password" name="password" placeholder="Password"><br>
+            <input type="submit" value="Login">
+        </form>
+        <div class="signup-link">
+            <a href="register">Don't have an account? Sign Up</a><br>
+            <a href="account">Change Password</a>
+        </div>
+    </div>
+</body>
+
+</html>

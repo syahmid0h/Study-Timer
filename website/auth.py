@@ -8,7 +8,7 @@ def register():
 
 @auth.route('/login')
 def login():
-    return render_template('login 2.html')
+    return render_template('login.html')
 
 @auth.route('/account')
 def account():
