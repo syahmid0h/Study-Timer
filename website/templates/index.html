@@ -10,10 +10,23 @@
 <body>
 
     <div class="login-container">
-        <button id="login-button" onclick="window.location.href='/login'">Login</button>
+        <button id="login-button" onclick="window.location.href='/login'">ACCOUNT</button>
+        <button id="logout-button" onclick="window.location.href='/logout'">LOGOUT</button>
     </div>
-        
 
+    <!-- Flash Messages Block -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+        
     <div class="container">
         <div id="timer">00:00</div>
         <input type="text" id="time-input" placeholder="Enter time">
