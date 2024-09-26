@@ -10,11 +10,10 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-      
         }
         body {
-            font-family: Georgia, 'Times New Roman', Times, serif ;
-            background-image: linear-gradient(to right, blue,#89cff0 );
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            background-image: linear-gradient(to right, blue, #89cff0);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -36,7 +35,6 @@
         form {
             display: flex;
             flex-direction: column;
-            
         }
         label {
             margin-bottom: 8px;
@@ -57,7 +55,7 @@
             cursor: pointer;
         }
         input[type="submit"]:hover {
-            background-color: #008000;
+            background-color: #006400;  /* Darker green for hover effect */
         }
         .login-link {
             text-align: center;
@@ -70,6 +68,16 @@
         .login-link a:hover {
             text-decoration: underline;
         }
+        .flash-messages {
+            color: green;  /* Color for success messages */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .flash-errors {
+            color: red;  /* Color for error messages */
+            text-align: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -77,12 +85,25 @@
     <div class="container">
         <h1>Register StudySpace</h1>
 
-        <form method="POST" action="/register">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.register') }}">
+            {{ form.hidden_tag() }}  <!-- For CSRF protection -->
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" required>
+            {{ form.username(size=32, class="form-control") }}  <!-- Use form field from Flask-WTF -->
 
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
+            {{ form.password(size=32, class="form-control") }}  <!-- Use form field from Flask-WTF -->
 
             <label for="confirm_password">Confirm Password</label>
             <input type="password" id="confirm_password" name="confirm_password" required>
@@ -91,8 +112,8 @@
         </form>
 
         <div class="login-link">
-            <a href="login">Already have an account? Log In</a><br>
-            <a href="account">Change Password</a>
+            <a href="{{ url_for('auth.login') }}">Already have an account? Log In</a><br>
+            <a href="{{ url_for('auth.change_password') }}">Change Password</a>
         </div>
     </div>
 
