@@ -1,0 +1,8 @@
+#Ignores database.db when pushing/commiting
+
+instance/database.db
+
+#same like above but for caches
+
+__pycache__/
+*.pyc
