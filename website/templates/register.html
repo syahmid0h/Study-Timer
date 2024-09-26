@@ -85,9 +85,6 @@
     <div class="container">
         <h1>Register StudySpace</h1>
 
-<<<<<<< HEAD
-        <form method="POST" action="register.html">
-=======
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="flash-messages">
@@ -102,7 +99,6 @@
 
         <form method="POST" action="{{ url_for('auth.register') }}">
             {{ form.hidden_tag() }}  <!-- For CSRF protection -->
->>>>>>> authenticationsystem
             <label for="username">Username</label>
             {{ form.username(size=32, class="form-control") }}  <!-- Use form field from Flask-WTF -->
 
