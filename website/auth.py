@@ -49,20 +49,25 @@ def register():
         flash('Account successfully created! You can now log in.')
         return redirect(url_for('auth.login'))
     return render_template('register.html', form=form)
-
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('views.index'))
+        return redirect(url_for('views.index'))  # Redirect if logged in
+
     form = LoginForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit():  
         user = User.query.filter_by(username=form.username.data).first()
+
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
-            print(f"User {user.username} logged in.")
+            flash('Login Successful!')
+            
+        
             return redirect(url_for('views.index'))
+
         else:
-            flash('Login Unsuccessful. Please check username and password', 'danger')
+            flash('Login Unsuccessful. Please check login credentials',)
+
     return render_template('login.html', form=form)
 
 @auth.route("/account", methods=['GET', 'POST'])
