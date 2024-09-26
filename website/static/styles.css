@@ -68,3 +68,11 @@ input[type="text"] {
     margin-bottom: 10px;
 }
  
+.flash-messages {
+    color: #d9534f;  /* Change to your preferred color */
+    background-color: #f8d7da;  /* Light background color */
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    list-style-type: none;  /* Remove bullet points */
+}

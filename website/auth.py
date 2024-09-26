@@ -49,26 +49,32 @@ def register():
         flash('Account successfully created! You can now log in.')
         return redirect(url_for('auth.login'))
     return render_template('register.html', form=form)
+
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('views.index'))  # Redirect if logged in
-
+    
     form = LoginForm()
-    if form.validate_on_submit():  
+    if form.validate_on_submit():
+        print("Form submitted and validated.")  # Debugging output
         user = User.query.filter_by(username=form.username.data).first()
+        if user is None:
+            print("User not found.")  
+        else:
+            print(f"User found: {user.username}")
 
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
-            flash('Login Successful!')
-            
-        
+            print(f"User {user.username} logged in.")  
             return redirect(url_for('views.index'))
-
         else:
-            flash('Login Unsuccessful. Please check login credentials',)
-
+            print("Password check failed.")  
+            flash('Login Unsuccessful. Please check username and password', 'danger')
+    else:
+        print("Form validation failed.")  
+        print(form.errors)  
     return render_template('login.html', form=form)
+
 
 @auth.route("/account", methods=['GET', 'POST'])
 @login_required
@@ -85,9 +91,16 @@ def change_password():
             flash('Current password is incorrect', 'danger')
     return render_template('account.html', form=form)
 
-@auth.route('/logout')
-@login_required
+@auth.route('/logout', methods=['GET', 'POST'])
 def logout():
-    logout_user()
-    flash('You have been logged out', 'info')
-    return redirect(url_for('auth.login'))
+    if request.method == 'POST':
+        if current_user.is_authenticated:
+            logout_user()  # Log the user out
+            flash('You have been logged out.', 'info')
+            return redirect(url_for('auth.login'))  # Redirect to login after logging out
+        else:
+            flash('You are not logged in.', 'warning')  # Flash message for unauthorized access
+            return redirect(url_for('views.index'))  # Redirect to index
+
+    # Handle GET request by rendering the logout confirmation page
+    return render_template('logout.html')  # Render logout confirmation page
