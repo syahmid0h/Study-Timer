@@ -29,7 +29,7 @@
         
     <div class="container">
         <div id="timer">00:00</div>
-        <input type="text" id="time-input" placeholder="Enter time">
+        <input type="text" id="time-input" placeholder="Enter time (mm:ss)">
         <div class="buttons">
             <button id="start-button">Start</button>
             <button id="pause-button">Pause</button>
@@ -68,7 +68,6 @@
                     console.log(response.status);
                     clearInterval(timerInterval);
                     timerInterval = null;
-                    isPaused = true;
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.error('Error pausing timer:', textStatus, errorThrown);
@@ -93,9 +92,35 @@
             });
         }
 
+        function startBreak() {
+            const breakTime = '05:00'; // Set 5-minute break time
+            $.ajax({
+                url: '/start',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ time: breakTime }),
+                success: function(response) {
+                    console.log(response.status);
+                    if (!timerInterval) {
+                        timerInterval = setInterval(updateTimer, 1000);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Error starting break:', textStatus, errorThrown);
+                }
+            });
+        }
+
         function updateTimer() {
             $.get('/time', function(data) {
                 $('#timer').text(data.time);
+                // Check if the timer has ended (assuming 00:00 as the end condition)
+                if (data.time === '00:00') {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    // Automatically start a 5-minute break after the timer ends
+                    startBreak();
+                }
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 console.error('Error fetching time:', textStatus, errorThrown);
             });
