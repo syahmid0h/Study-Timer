@@ -25,16 +25,8 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired(), Length(min=4, max=20)])
     submit = SubmitField("Login")
 
-class ChangePasswordForm(FlaskForm):
-    current_password = PasswordField('Current Password', validators=[InputRequired()])
-    new_password = PasswordField('New Password', validators=[InputRequired(), Length(min=4, max=20)])
-    confirm_password = PasswordField('Confirm New Password', validators=[InputRequired(), Length(min=4, max=20)])
-    submit = SubmitField("Change Password")
 
-    def validate_confirm_password(self, confirm_password):
-        if confirm_password.data != self.new_password.data:
-            raise ValidationError('Passwords do not match.')
-   
+
 
 @auth.route('/register', methods=['GET','POST'])
 def register():
@@ -76,20 +68,6 @@ def login():
     return render_template('login.html', form=form)
 
 
-@auth.route("/account", methods=['GET', 'POST'])
-@login_required
-def change_password():
-    form = ChangePasswordForm()
-    if form.validate_on_submit():
-        if bcrypt.check_password_hash(current_user.password, form.current_password.data):
-            hashed_password = bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
-            current_user.password = hashed_password
-            db.session.commit()
-            flash('Password updated successfully!', 'success')
-            return redirect(url_for('views.index'))
-        else:
-            flash('Current password is incorrect', 'danger')
-    return render_template('account.html', form=form)
 
 @auth.route('/logout', methods=['GET', 'POST'])
 def logout():
