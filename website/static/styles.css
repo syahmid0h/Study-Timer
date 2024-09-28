@@ -39,7 +39,11 @@ body {
 }
 
 #timer.break {
-    color: #24a524;
+    color: #3bd33b;
+}
+
+#timer.study{
+    color: #87CEEB;
 }
 
 .buttons {

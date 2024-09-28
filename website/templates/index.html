@@ -95,23 +95,35 @@
 
         function updateTimer() {
             $.get('/time', function(data) {
-                $('#timer').text(data.time);
-                if (data.time === "BREAK TIME!") {
-                    $('#timer').addClass('break').removeClass('study');
-                } else if (data.time === "BREAK'S OVER!") {
-                    $('#timer').removeClass('break').addClass('study');
-                }
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-                console.error('Error fetching time:', textStatus, errorThrown);
-            });
+        $('#timer').text(data.time);
+
+        // Check if break mode is activated
+        if (data.time === "Break Time!") {
+            if (!$('#timer').hasClass('break')) {
+                $('#timer').removeClass('study').addClass('break');  // Apply break styles
+            }
+        } 
+        // Check if the break is over
+        else if (data.time === "Break's over!") {
+            $('#timer').removeClass('break').addClass('study');  // Revert to study mode
+        } 
+        // Ensure it's always in study mode if none of the above
+        else {
+            if (!$('#timer').hasClass('study')) {
+                $('#timer').removeClass('break').addClass('study');  // Ensure study mode stays
+            }
         }
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.error('Error fetching time:', textStatus, errorThrown);
+    });
+}
+
 
         $(document).ready(function() {
             $('#start-button').click(startTimer);
             $('#pause-button').click(pauseTimer);
             $('#reset-button').click(resetTimer);
 
-            // Clear interval if needed (e.g., on page unload)
             $(window).on('beforeunload', function() {
                 clearInterval(timerInterval);
             });
