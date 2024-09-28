@@ -38,6 +38,10 @@ body {
     color: #87CEEB;
 }
 
+#timer.break {
+    color: #24a524;
+}
+
 .buttons {
     display: flex;
     justify-content: center;

@@ -96,6 +96,11 @@
         function updateTimer() {
             $.get('/time', function(data) {
                 $('#timer').text(data.time);
+                if (data.time === "BREAK TIME!") {
+                    $('#timer').addClass('break').removeClass('study');
+                } else if (data.time === "BREAK'S OVER!") {
+                    $('#timer').removeClass('break').addClass('study');
+                }
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 console.error('Error fetching time:', textStatus, errorThrown);
             });
