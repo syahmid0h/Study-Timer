@@ -30,7 +30,7 @@ def start_timer():
     global timer_running, timer_duration, timer_start_time, is_paused, is_on_break
     data = request.get_json()
     if data and 'time' in data:
-        timer_duration = (int(data['time']))  # Time in minutes from the user
+        timer_duration = minutes_to_seconds(int(data['time']))  # Time in minutes from the user
         if not is_paused:
             timer_start_time = time.time()  # Record the current time
         else:

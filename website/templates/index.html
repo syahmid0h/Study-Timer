@@ -29,7 +29,7 @@
         
     <div class="container">
         <div id="timer">00:00</div>
-        <input type="text" id="time-input" placeholder="Enter time">
+        <input type="text" id="time-input" placeholder="Enter time: (MINUTES)">
         <div class="buttons">
             <button id="start-button">Start</button>
             <button id="pause-button">Pause</button>
@@ -97,20 +97,20 @@
             $.get('/time', function(data) {
         $('#timer').text(data.time);
 
-        // Check if break mode is activated
+        
         if (data.time === "Break Time!") {
             if (!$('#timer').hasClass('break')) {
-                $('#timer').removeClass('study').addClass('break');  // Apply break styles
+                $('#timer').removeClass('study').addClass('break');
             }
         } 
-        // Check if the break is over
+        
         else if (data.time === "Break's over!") {
-            $('#timer').removeClass('break').addClass('study');  // Revert to study mode
+            $('#timer').removeClass('break').addClass('study');
         } 
-        // Ensure it's always in study mode if none of the above
+        
         else {
             if (!$('#timer').hasClass('study')) {
-                $('#timer').removeClass('break').addClass('study');  // Ensure study mode stays
+                $('#timer').removeClass('break').addClass('study');
             }
         }
     }).fail(function(jqXHR, textStatus, errorThrown) {
